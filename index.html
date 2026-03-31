@@ -342,13 +342,13 @@ function rDash(a){
   // 2.7 Top 5 item aktif
   const top5=items.filter(i=>i.tShip>0).sort((a,b)=>(b.tShip+b.tBill)-(a.tShip+a.tBill)).slice(0,5);
 
-  a.innerHTML=\`
+  a.innerHTML=`
   <!-- KPI Row 1: existing -->
   <div class="stats">
-    <div class="sc"><div class="sc-l">Total Diminta</div><div class="sc-v" style="color:var(--ac)">\${tR.toLocaleString()}</div><div class="sc-s">pcs</div></div>
-    <div class="sc"><div class="sc-l">Total Dikirim</div><div class="sc-v" style="color:var(--g)">\${tS.toLocaleString()}</div><div class="sc-s">\${pS} belum lengkap</div></div>
-    <div class="sc"><div class="sc-l">Tertagih</div><div class="sc-v" style="color:var(--am)">\${tB.toLocaleString()}</div><div class="sc-s">pcs</div></div>
-    <div class="sc"><div class="sc-l">Belum Tertagih</div><div class="sc-v" style="color:\${bT>0?'var(--r)':'var(--g)'}">\${bT.toLocaleString()}</div><div class="sc-s">\${pB} request</div></div>
+    <div class="sc"><div class="sc-l">Total Diminta</div><div class="sc-v" style="color:var(--ac)">${tR.toLocaleString()}</div><div class="sc-s">pcs</div></div>
+    <div class="sc"><div class="sc-l">Total Dikirim</div><div class="sc-v" style="color:var(--g)">${tS.toLocaleString()}</div><div class="sc-s">${pS} belum lengkap</div></div>
+    <div class="sc"><div class="sc-l">Tertagih</div><div class="sc-v" style="color:var(--am)">${tB.toLocaleString()}</div><div class="sc-s">pcs</div></div>
+    <div class="sc"><div class="sc-l">Belum Tertagih</div><div class="sc-v" style="color:${bT>0?'var(--r)':'var(--g)'}">${bT.toLocaleString()}</div><div class="sc-s">${pB} request</div></div>
   </div>
 
   <!-- 2.1 Estimasi Nilai Rp -->
@@ -357,15 +357,15 @@ function rDash(a){
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <div class="sc" style="background:var(--rd);border-color:var(--r);flex:1;min-width:160px">
         <div class="sc-l" style="color:var(--r)">Estimasi Belum Tertagih</div>
-        <div class="sc-v" style="color:var(--r);font-size:22px">\${fmRp(estTotal)}</div>
-        <div class="sc-s" style="color:var(--r);opacity:.7">\${fmRpFull(estTotal)}</div>
+        <div class="sc-v" style="color:var(--r);font-size:22px">${fmRp(estTotal)}</div>
+        <div class="sc-s" style="color:var(--r);opacity:.7">${fmRpFull(estTotal)}</div>
       </div>
       <div class="sc" style="flex:1;min-width:160px">
-        <div class="sc-l">Rekap Bulan Ini (\${fm(mThis)})</div>
-        <div class="sc-v" style="color:var(--g);font-size:20px">\${sjThis.length} <span style="font-size:13px;font-weight:400;color:var(--t3)">surat jalan</span></div>
-        <div class="sc-s">\${pcsThis.toLocaleString()} pcs\${pctChg!==null?' · <span style="color:'+(pctChg>=0?'var(--g)':'var(--r)')+'">'+( pctChg>=0?'+':'')+pctChg+'% vs '+fm(mPrev)+'</span>':''}</div>
+        <div class="sc-l">Rekap Bulan Ini (${fm(mThis)})</div>
+        <div class="sc-v" style="color:var(--g);font-size:20px">${sjThis.length} <span style="font-size:13px;font-weight:400;color:var(--t3)">surat jalan</span></div>
+        <div class="sc-s">${pcsThis.toLocaleString()} pcs${pctChg!==null?' · <span style="color:'+(pctChg>=0?'var(--g)':'var(--r)')+'">'+( pctChg>=0?'+':'')+pctChg+'% vs '+fm(mPrev)+'</span>':''}</div>
       </div>
-      \${itemsTanpaHarga>0?\`<div class="sc" style="background:var(--amd);border-color:var(--am);flex:1;min-width:160px"><div class="sc-l" style="color:var(--am)">Perhatian</div><div class="sc-v" style="color:var(--am);font-size:18px">\${itemsTanpaHarga} item</div><div class="sc-s" style="color:var(--am);opacity:.8">belum ada harga, estimasi tidak lengkap</div></div>\`:''}
+      ${itemsTanpaHarga>0?`<div class="sc" style="background:var(--amd);border-color:var(--am);flex:1;min-width:160px"><div class="sc-l" style="color:var(--am)">Perhatian</div><div class="sc-v" style="color:var(--am);font-size:18px">${itemsTanpaHarga} item</div><div class="sc-s" style="color:var(--am);opacity:.8">belum ada harga, estimasi tidak lengkap</div></div>`:''}
     </div>
   </div>
 
@@ -373,21 +373,21 @@ function rDash(a){
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
     <div class="pnl" style="flex:1;min-width:260px;margin-bottom:0">
       <div class="pnl-t" style="margin-bottom:12px">Aging Belum Tertagih</div>
-      \${[{k:'a',l:'0–30 hr',c:'var(--g)'},{k:'b',l:'30–60 hr',c:'var(--am)'},{k:'c',l:'>60 hr',c:'var(--r)'}].map(({k,l,c})=>\`
+      ${[{k:'a',l:'0–30 hr',c:'var(--g)'},{k:'b',l:'30–60 hr',c:'var(--am)'},{k:'c',l:'>60 hr',c:'var(--r)'}].map(({k,l,c})=>`
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <div style="width:60px;font-size:11px;color:var(--t3)">\${l}</div>
+          <div style="width:60px;font-size:11px;color:var(--t3)">${l}</div>
           <div style="flex:1;background:var(--bg);border-radius:4px;height:8px;overflow:hidden">
-            <div style="width:\${Math.round(aging[k]/agingMax*100)}%;height:100%;background:\${c};border-radius:4px;transition:width .3s"></div>
+            <div style="width:${Math.round(aging[k]/agingMax*100)}%;height:100%;background:${c};border-radius:4px;transition:width .3s"></div>
           </div>
-          <div style="width:50px;text-align:right;font-size:12px;font-weight:600;color:\${c}">\${aging[k]} pcs</div>
-        </div>\`).join('')}
-      \${aging.a+aging.b+aging.c===0?'<div class="de">Tidak ada data pengiriman</div>':''}
+          <div style="width:50px;text-align:right;font-size:12px;font-weight:600;color:${c}">${aging[k]} pcs</div>
+        </div>`).join('')}
+      ${aging.a+aging.b+aging.c===0?'<div class="de">Tidak ada data pengiriman</div>':''}
     </div>
     <div class="pnl" style="flex:1;min-width:260px;margin-bottom:0">
       <div class="pnl-t" style="margin-bottom:12px">Riwayat Invoice</div>
-      \${invList.length===0?'<div class="de">Belum ada penagihan</div>':\`<table class="dtb"><thead><tr><th>No. PO/Invoice</th><th>Tanggal</th><th class="r">Qty</th></tr></thead><tbody>
-        \${invList.map(v=>\`<tr><td class="b">\${$(v.po)}</td><td>\${v.tgl||'-'}</td><td class="r">\${v.qty}</td></tr>\`).join('')}
-      </tbody></table>\`}
+      ${invList.length===0?'<div class="de">Belum ada penagihan</div>':`<table class="dtb"><thead><tr><th>No. PO/Invoice</th><th>Tanggal</th><th class="r">Qty</th></tr></thead><tbody>
+        ${invList.map(v=>`<tr><td class="b">${$(v.po)}</td><td>${v.tgl||'-'}</td><td class="r">${v.qty}</td></tr>`).join('')}
+      </tbody></table>`}
     </div>
   </div>
 
@@ -401,28 +401,28 @@ function rDash(a){
         <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--am);border-radius:2px;display:inline-block"></span>Tertagih</span>
       </div>
       <div style="display:flex;align-items:flex-end;gap:6px;height:80px;padding-bottom:20px;position:relative">
-        \${trenData.map(d=>\`
+        ${trenData.map(d=>`
           <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%">
             <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
-              <div style="flex:1;background:var(--ac);border-radius:2px 2px 0 0;height:\${Math.round(d.diminta/trenMax*100)}%" title="Diminta: \${d.diminta}"></div>
-              <div style="flex:1;background:var(--g);border-radius:2px 2px 0 0;height:\${Math.round(d.dikirim/trenMax*100)}%" title="Dikirim: \${d.dikirim}"></div>
-              <div style="flex:1;background:var(--am);border-radius:2px 2px 0 0;height:\${Math.round(d.tertagih/trenMax*100)}%" title="Tertagih: \${d.tertagih}"></div>
+              <div style="flex:1;background:var(--ac);border-radius:2px 2px 0 0;height:${Math.round(d.diminta/trenMax*100)}%" title="Diminta: ${d.diminta}"></div>
+              <div style="flex:1;background:var(--g);border-radius:2px 2px 0 0;height:${Math.round(d.dikirim/trenMax*100)}%" title="Dikirim: ${d.dikirim}"></div>
+              <div style="flex:1;background:var(--am);border-radius:2px 2px 0 0;height:${Math.round(d.tertagih/trenMax*100)}%" title="Tertagih: ${d.tertagih}"></div>
             </div>
-            <div style="font-size:10px;color:var(--t3);white-space:nowrap;position:absolute;bottom:0">\${fm(d.m)}</div>
-          </div>\`).join('')}
+            <div style="font-size:10px;color:var(--t3);white-space:nowrap;position:absolute;bottom:0">${fm(d.m)}</div>
+          </div>`).join('')}
       </div>
     </div>
     <div class="pnl" style="flex:1;min-width:220px;margin-bottom:0">
       <div class="pnl-t" style="margin-bottom:12px">Top 5 Item Aktif</div>
-      \${top5.length===0?'<div class="de">Belum ada data</div>':top5.map((i,idx)=>\`
+      ${top5.length===0?'<div class="de">Belum ada data</div>':top5.map((i,idx)=>`
         <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr)">
-          <div style="width:18px;height:18px;border-radius:50%;background:var(--acd);color:var(--ac);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">\${idx+1}</div>
+          <div style="width:18px;height:18px;border-radius:50%;background:var(--acd);color:var(--ac);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${idx+1}</div>
           <div style="flex:1;min-width:0">
-            <div class="b" style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">\${$(i.code)}</div>
-            <div style="font-size:10px;color:var(--t3)">\${(i.tShip+i.tBill).toLocaleString()} pcs total</div>
+            <div class="b" style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${$(i.code)}</div>
+            <div style="font-size:10px;color:var(--t3)">${(i.tShip+i.tBill).toLocaleString()} pcs total</div>
           </div>
-          <div style="text-align:right;font-size:11px;color:\${i.bT>0?'var(--r)':'var(--g)'};\${i.bT>0?'font-weight:600':''}">\${i.bT>0?i.bT+' blm tagih':'✓'}</div>
-        </div>\`).join('')}
+          <div style="text-align:right;font-size:11px;color:${i.bT>0?'var(--r)':'var(--g)'};${i.bT>0?'font-weight:600':''}">${i.bT>0?i.bT+' blm tagih':'✓'}</div>
+        </div>`).join('')}
     </div>
   </div>
 
@@ -431,27 +431,27 @@ function rDash(a){
     <div class="pnl" style="flex:1;min-width:260px;margin-bottom:0">
       <div class="pnl-t" style="margin-bottom:8px">📦 Antrian Pengiriman</div>
       <div style="font-size:11px;color:var(--t3);margin-bottom:10px">Item sisa request, urut terlama — untuk gudang</div>
-      \${pR.length===0?'<div class="empty">Semua terpenuhi ✓</div>':pR.slice(0,8).map(r=>\`
+      ${pR.length===0?'<div class="empty">Semua terpenuhi ✓</div>':pR.slice(0,8).map(r=>`
         <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)">
-          <span class="bg bg-b" style="flex-shrink:0">\${fm(r.month)}</span>
-          <div style="flex:1;min-width:0"><span class="b" style="font-size:12px">\${$(r.item_code)}</span></div>
-          <span style="color:var(--am);font-weight:600;font-size:12px;white-space:nowrap">Sisa \${r.sR}<span style="font-size:10px;color:var(--t3)"> / \${r.qty_requested}</span></span>
-          <button class="btn btn-p" style="font-size:10px;padding:2px 8px" onclick="openM('shipment',{request_id:\${r.id},ship_date:'',surat_jalan:'',qty:0})">+Kirim</button>
-        </div>\`).join('')}
-      \${pR.length>8?\`<div style="font-size:11px;color:var(--t3);padding:6px 0">+\${pR.length-8} lainnya — lihat tab Request</div>\`:''}
+          <span class="bg bg-b" style="flex-shrink:0">${fm(r.month)}</span>
+          <div style="flex:1;min-width:0"><span class="b" style="font-size:12px">${$(r.item_code)}</span></div>
+          <span style="color:var(--am);font-weight:600;font-size:12px;white-space:nowrap">Sisa ${r.sR}<span style="font-size:10px;color:var(--t3)"> / ${r.qty_requested}</span></span>
+          <button class="btn btn-p" style="font-size:10px;padding:2px 8px" onclick="openM('shipment',{request_id:${r.id},ship_date:'',surat_jalan:'',qty:0})">+Kirim</button>
+        </div>`).join('')}
+      ${pR.length>8?`<div style="font-size:11px;color:var(--t3);padding:6px 0">+${pR.length-8} lainnya — lihat tab Request</div>`:''}
     </div>
     <div class="pnl" style="flex:1;min-width:260px;margin-bottom:0">
       <div class="pnl-t" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">💰 Item Belum Tertagih<button class="btn btn-g" onclick="openBatchBill()" style="font-size:11px;padding:3px 10px">Batch Tagih</button></div>
-      \${iS.length===0?'<div class="empty">Semua sudah tertagih ✓</div>':iS.map(i=>{const p=i.tShip>0?Math.round(i.tBill/i.tShip*100):0;
-        return\`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr)">
-          <div style="flex:1;min-width:0"><div class="b" style="font-size:12px">\${$(i.code)}</div><div style="font-size:10px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">\${$(i.description)}</div></div>
-          <div class="pw"><div class="pb"><div class="pf" style="width:\${p}%;background:\${p===100?'var(--g)':'var(--am)'}"></div></div><div class="pl">\${p}%</div></div>
+      ${iS.length===0?'<div class="empty">Semua sudah tertagih ✓</div>':iS.map(i=>{const p=i.tShip>0?Math.round(i.tBill/i.tShip*100):0;
+        return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr)">
+          <div style="flex:1;min-width:0"><div class="b" style="font-size:12px">${$(i.code)}</div><div style="font-size:10px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${$(i.description)}</div></div>
+          <div class="pw"><div class="pb"><div class="pf" style="width:${p}%;background:${p===100?'var(--g)':'var(--am)'}"></div></div><div class="pl">${p}%</div></div>
           <div style="text-align:right;min-width:55px">
-            <div style="font-size:14px;font-weight:700;color:var(--r)">\${i.bT}</div>
-            \${i.estNilai>0?\`<div style="font-size:10px;color:var(--t3)">\${fmRp(i.estNilai)}</div>\`:''}
-          </div></div>\`;}).join('')}
+            <div style="font-size:14px;font-weight:700;color:var(--r)">${i.bT}</div>
+            ${i.estNilai>0?`<div style="font-size:10px;color:var(--t3)">${fmRp(i.estNilai)}</div>`:''}
+          </div></div>`;}).join('')}
     </div>
-  </div>\`;
+  </div>`;
 }
 
 function rReq(a){
