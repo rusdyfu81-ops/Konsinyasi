@@ -6,6 +6,7 @@
 <title>Konsinyasi Tracker - PT Philo Teknik</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 :root{--bg:#0f1117;--card:#1a1d27;--c2:#21242f;--bdr:#2a2d3a;--ac:#3b82f6;--acd:#1e3a5f;--g:#22c55e;--gd:#14532d;--am:#f59e0b;--amd:#78350f;--r:#ef4444;--rd:#7f1d1d;--t:#e2e8f0;--t2:#94a3b8;--t3:#64748b}
@@ -20,7 +21,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
 .sc{background:var(--card);border-radius:10px;padding:16px 20px;border:1px solid var(--bdr);flex:1;min-width:140px}
 .sc-l{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.sc-v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}.sc-s{font-size:11px;color:var(--t3);margin-top:2px}
+.sc-v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}.sc-s{font-size:11px;color:var(--t3);margin-top:2px}
+.btn-am{background:var(--amd);color:var(--am);border:none}
 .pnl{background:var(--card);border-radius:10px;border:1px solid var(--bdr);padding:20px;margin-bottom:16px}.pnl-t{font-size:15px;font-weight:700;margin-bottom:16px}
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
@@ -74,8 +76,8 @@ td{padding:8px 10px;border-bottom:1px solid var(--bdr);vertical-align:top}
 </style>
 </head>
 <body>
-<div class="hdr"><div><div class="hdr-t">Konsinyasi Tracker</div><div class="hdr-s">PT Philo Teknik → PT Yanmar Diesel Indonesia</div></div>
-<div class="tabs"><button class="tab on" data-t="dashboard" onclick="go('dashboard')">◉ Dashboard</button><button class="tab" data-t="requests" onclick="go('requests')">📋 Request</button><button class="tab" data-t="shipments" onclick="go('shipments')">🚚 Pengiriman</button><button class="tab" data-t="billings" onclick="go('billings')">💰 Penagihan</button><button class="tab" data-t="items" onclick="go('items')">📦 Ringkasan</button></div></div>
+<div class="hdr"><div><div class="hdr-t">Konsinyasi Tracker</div><div class="hdr-s">Philo Teknik → Yanmar Diesel Indonesia</div></div>
+<div class="tabs"><button class="tab on" data-t="dashboard" onclick="go('dashboard')">Dashboard</button><button class="tab" data-t="requests" onclick="go('requests')">Request</button><button class="tab" data-t="shipments" onclick="go('shipments')">Pengiriman</button><button class="tab" data-t="billings" onclick="go('billings')">Penagihan</button><button class="tab" data-t="items" onclick="go('items')">Ringkasan</button></div></div>
 <div class="wrap" id="app"><div class="loading"><div class="spinner"></div><br>Memuat data...</div></div>
 <div id="mr"></div>
 <script>
@@ -280,7 +282,7 @@ function openBatchBill(){
 function render(){
   const a=document.getElementById('app');
   if(S.loading){a.innerHTML='<div class="loading"><div class="spinner"></div><br>Memuat data...</div>';return}
-  if(S.tab==='dashboard')rDash(a);else if(S.tab==='requests')rReq(a);else if(S.tab==='shipments')rShip(a);else if(S.tab==='billings')rBill(a);else if(S.tab==='items')rIt(a);
+  if(S.tab==='dashboard'){rDash(a);setTimeout(initTrenChart,0);}else if(S.tab==='requests')rReq(a);else if(S.tab==='shipments')rShip(a);else if(S.tab==='billings')rBill(a);else if(S.tab==='items')rIt(a);
 }
 
 function rDash(a){
@@ -347,25 +349,25 @@ function rDash(a){
   <div class="stats">
     <div class="sc"><div class="sc-l">Total Diminta</div><div class="sc-v" style="color:var(--ac)">${tR.toLocaleString()}</div><div class="sc-s">pcs</div></div>
     <div class="sc"><div class="sc-l">Total Dikirim</div><div class="sc-v" style="color:var(--g)">${tS.toLocaleString()}</div><div class="sc-s">${pS} belum lengkap</div></div>
-    <div class="sc"><div class="sc-l">Tertagih</div><div class="sc-v" style="color:var(--am)">${tB.toLocaleString()}</div><div class="sc-s">pcs</div></div>
+    <div class="sc"><div class="sc-l">Tertagih</div><div class="sc-v" style="color:var(--am)">${tB.toLocaleString()}</div><div class="sc-s">${invList.length} invoice</div></div>
     <div class="sc"><div class="sc-l">Belum Tertagih</div><div class="sc-v" style="color:${bT>0?'var(--r)':'var(--g)'}">${bT.toLocaleString()}</div><div class="sc-s">${pB} request</div></div>
   </div>
 
   <!-- 2.1 Estimasi Nilai Rp -->
   <div class="pnl" style="margin-bottom:16px">
-    <div class="pnl-t" style="margin-bottom:12px">Estimasi Nilai Konsinyasi</div>
+    <div class="pnl-t" style="margin-bottom:12px">Estimasi nilai konsinyasi</div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <div class="sc" style="background:var(--rd);border-color:var(--r);flex:1;min-width:160px">
-        <div class="sc-l" style="color:var(--r)">Estimasi Belum Tertagih</div>
-        <div class="sc-v" style="color:var(--r);font-size:22px">${fmRp(estTotal)}</div>
-        <div class="sc-s" style="color:var(--r);opacity:.7">${fmRpFull(estTotal)}</div>
+      <div class="sc" style="border:1px solid var(--r);flex:1;min-width:160px">
+        <div class="sc-l">Estimasi belum tertagih</div>
+        <div class="sc-v" style="color:var(--r)">${fmRp(estTotal)}</div>
+        <div class="sc-s" style="font-style:italic;color:var(--t3)">~perkiraan dari harga PO</div>
       </div>
       <div class="sc" style="flex:1;min-width:160px">
-        <div class="sc-l">Rekap Bulan Ini (${fm(mThis)})</div>
+        <div class="sc-l">Rekap bulan ini (${fm(mThis)})</div>
         <div class="sc-v" style="color:var(--g);font-size:20px">${sjThis.length} <span style="font-size:13px;font-weight:400;color:var(--t3)">surat jalan</span></div>
         <div class="sc-s">${pcsThis.toLocaleString()} pcs${pctChg!==null?' · <span style="color:'+(pctChg>=0?'var(--g)':'var(--r)')+'">'+( pctChg>=0?'+':'')+pctChg+'% vs '+fm(mPrev)+'</span>':''}</div>
       </div>
-      ${itemsTanpaHarga>0?`<div class="sc" style="background:var(--amd);border-color:var(--am);flex:1;min-width:160px"><div class="sc-l" style="color:var(--am)">Perhatian</div><div class="sc-v" style="color:var(--am);font-size:18px">${itemsTanpaHarga} item</div><div class="sc-s" style="color:var(--am);opacity:.8">belum ada harga, estimasi tidak lengkap</div></div>`:''}
+      ${itemsTanpaHarga>0?`<div class="sc" style="border:1px solid var(--am);flex:1;min-width:160px"><div class="sc-l">Perhatian</div><div class="sc-v" style="color:var(--am);font-size:18px">${itemsTanpaHarga} item</div><div class="sc-s">belum ada harga, estimasi kurang lengkap</div></div>`:''}
     </div>
   </div>
 
@@ -394,23 +396,12 @@ function rDash(a){
   <!-- 2.6 Tren Bulanan + 2.7 Top 5 (2 kolom) -->
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
     <div class="pnl" style="flex:2;min-width:280px;margin-bottom:0">
-      <div class="pnl-t" style="margin-bottom:12px">Tren Bulanan (pcs)</div>
-      <div style="display:flex;gap:12px;margin-bottom:8px;font-size:11px">
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--ac);border-radius:2px;display:inline-block"></span>Diminta</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--g);border-radius:2px;display:inline-block"></span>Dikirim</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--am);border-radius:2px;display:inline-block"></span>Tertagih</span>
-      </div>
-      <div style="display:flex;align-items:flex-end;gap:6px;height:80px;padding-bottom:20px;position:relative">
-        ${trenData.map(d=>`
-          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%">
-            <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
-              <div style="flex:1;background:var(--ac);border-radius:2px 2px 0 0;height:${Math.round(d.diminta/trenMax*100)}%" title="Diminta: ${d.diminta}"></div>
-              <div style="flex:1;background:var(--g);border-radius:2px 2px 0 0;height:${Math.round(d.dikirim/trenMax*100)}%" title="Dikirim: ${d.dikirim}"></div>
-              <div style="flex:1;background:var(--am);border-radius:2px 2px 0 0;height:${Math.round(d.tertagih/trenMax*100)}%" title="Tertagih: ${d.tertagih}"></div>
-            </div>
-            <div style="font-size:10px;color:var(--t3);white-space:nowrap;position:absolute;bottom:0">${fm(d.m)}</div>
-          </div>`).join('')}
-      </div>
+      <div class="pnl-t" style="margin-bottom:12px">Tren bulanan (pcs)</div>
+      <div style="position:relative;height:160px"><canvas id="trenChart"
+        data-labels="${trenData.map(d=>fm(d.m)).join('|')}"
+        data-diminta="${trenData.map(d=>d.diminta).join(',')}"
+        data-dikirim="${trenData.map(d=>d.dikirim).join(',')}"
+        data-tertagih="${trenData.map(d=>d.tertagih).join(',')}"></canvas></div>
     </div>
     <div class="pnl" style="flex:1;min-width:220px;margin-bottom:0">
       <div class="pnl-t" style="margin-bottom:12px">Top 5 Item Aktif</div>
@@ -429,7 +420,7 @@ function rDash(a){
   <!-- 2.4 Antrian + existing panels -->
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
     <div class="pnl" style="flex:1;min-width:260px;margin-bottom:0">
-      <div class="pnl-t" style="margin-bottom:8px">📦 Antrian Pengiriman</div>
+      <div class="pnl-t" style="margin-bottom:8px">Antrian pengiriman</div>
       <div style="font-size:11px;color:var(--t3);margin-bottom:10px">Item sisa request, urut terlama — untuk gudang</div>
       ${pR.length===0?'<div class="empty">Semua terpenuhi ✓</div>':pR.slice(0,8).map(r=>`
         <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)">
@@ -441,7 +432,7 @@ function rDash(a){
       ${pR.length>8?`<div style="font-size:11px;color:var(--t3);padding:6px 0">+${pR.length-8} lainnya — lihat tab Request</div>`:''}
     </div>
     <div class="pnl" style="flex:1;min-width:260px;margin-bottom:0">
-      <div class="pnl-t" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">💰 Item Belum Tertagih<button class="btn btn-g" onclick="openBatchBill()" style="font-size:11px;padding:3px 10px">Batch Tagih</button></div>
+      <div class="pnl-t" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">Item belum tertagih<button class="btn btn-g" onclick="openBatchBill()" style="font-size:11px;padding:3px 10px">Batch Tagih</button></div>
       ${iS.length===0?'<div class="empty">Semua sudah tertagih ✓</div>':iS.map(i=>{const p=i.tShip>0?Math.round(i.tBill/i.tShip*100):0;
         return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr)">
           <div style="flex:1;min-width:0"><div class="b" style="font-size:12px">${$(i.code)}</div><div style="font-size:10px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${$(i.description)}</div></div>
@@ -463,12 +454,12 @@ function rReq(a){
     <select onchange="S.fM=this.value;render()"><option value="all">Semua Bulan</option>${mos.map(m=>`<option value="${m}"${S.fM===m?' selected':''}>${fm(m)}</option>`).join('')}</select>
     <button class="btn btn-p" onclick="openImport()">📥 Import Request</button>
     <button class="btn btn-s" onclick="openBatchShip()">📦 Batch Kirim</button>
-    <button class="btn btn-g" style="background:var(--amd);color:var(--am);border:none" onclick="openBatchBill()">💰 Batch Tagih</button>
+    <button class="btn btn-am" onclick="openBatchBill()">Batch Tagih</button>
   </div>
   ${Object.entries(g).sort(([a],[b])=>a.localeCompare(b)).map(([mo,rqs])=>{
     const rn=rqs.find(r=>r.request_number)?.request_number;
     return`<div style="margin-bottom:20px"><div class="mh">${fm(mo)}${rn?' — '+$(rn):''}</div><div class="tw"><table>
-    <thead><tr><th style="width:28px"></th><th>Item</th><th>Deskripsi</th><th class="r">Stok</th><th class="r">Minta</th><th class="r">Kirim</th><th class="r">Sisa</th><th class="r">Tagih</th><th class="r">Blm</th><th>Aksi</th></tr></thead>
+    <thead><tr><th style="width:28px"></th><th>Item</th><th>Deskripsi</th><th class="r">Stok</th><th class="r">Minta</th><th class="r">Kirim</th><th class="r">Sisa</th><th class="r">Tagih</th><th class="r">Blm Tagih</th><th>Aksi</th></tr></thead>
     <tbody>${rqs.map(r=>{
       const x=S.exp[r.id],sh=S.shipments.filter(s=>s.request_id===r.id),bl=S.billings.filter(b=>b.request_id===r.id);
       const isD=S.dc&&S.dc.t==='requests'&&S.dc.id===r.id;
@@ -717,6 +708,40 @@ function rM(){
   root.innerHTML=`<div class="mo" onclick="closeM()"><div class="md" onclick="event.stopPropagation()">${html}</div></div>`;
   setTimeout(()=>document.querySelectorAll('.srw input').forEach(i=>i.addEventListener('blur',()=>setTimeout(()=>{if(S.modal){S.modal.sl=false;rM()}},200))),50);
 }
+
+function initTrenChart(){
+  const el=document.getElementById('trenChart');
+  if(!el)return;
+  const existing=typeof Chart!=='undefined'&&Chart.getChart(el);
+  if(existing)existing.destroy();
+  if(typeof Chart==='undefined')return;
+  const labels=el.dataset.labels.split('|');
+  const diminta=el.dataset.diminta.split(',').map(Number);
+  const dikirim=el.dataset.dikirim.split(',').map(Number);
+  const tertagih=el.dataset.tertagih.split(',').map(Number);
+  const tc='#64748b',gc='rgba(255,255,255,0.06)';
+  new Chart(el,{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Diminta',data:diminta,backgroundColor:'rgba(59,130,246,0.7)',borderRadius:3,borderSkipped:false},
+      {label:'Dikirim',data:dikirim,backgroundColor:'rgba(34,197,94,0.7)',borderRadius:3,borderSkipped:false},
+      {label:'Tertagih',data:tertagih,backgroundColor:'rgba(245,158,11,0.7)',borderRadius:3,borderSkipped:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:tc,font:{size:11},boxWidth:10,padding:12}},
+        tooltip:{backgroundColor:'#1a1d27',titleColor:'#e2e8f0',bodyColor:'#94a3b8',padding:10,
+          callbacks:{label:ctx=>' '+ctx.dataset.label+': '+ctx.parsed.y.toLocaleString()+' pcs'}}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:tc,font:{size:11}}},
+        y:{grid:{color:gc},ticks:{color:tc,font:{size:10},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v}}
+      }
+    }
+  });
+}
+
 
 load();
 </script>
